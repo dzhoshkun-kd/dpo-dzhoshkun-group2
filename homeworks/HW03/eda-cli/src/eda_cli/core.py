@@ -17,6 +17,7 @@ class ColumnSummary:
     unique: int
     example_values: List[Any]
     is_numeric: bool
+    is_constant: bool
     min: Optional[float] = None
     max: Optional[float] = None
     mean: Optional[float] = None
@@ -64,6 +65,7 @@ def summarize_dataset(
         missing = n_rows - non_null
         missing_share = float(missing / n_rows) if n_rows > 0 else 0.0
         unique = int(s.nunique(dropna=True))
+        is_constant = bool((s.nunique(dropna=True)) <= 1)
 
         # Примерные значения выводим как строки
         examples = (
@@ -71,7 +73,7 @@ def summarize_dataset(
             if non_null > 0
             else []
         )
-
+        
         is_numeric = bool(ptypes.is_numeric_dtype(s))
         min_val: Optional[float] = None
         max_val: Optional[float] = None
@@ -94,6 +96,7 @@ def summarize_dataset(
                 unique=unique,
                 example_values=examples,
                 is_numeric=is_numeric,
+                is_constant=is_constant,
                 min=min_val,
                 max=max_val,
                 mean=mean_val,
@@ -102,7 +105,6 @@ def summarize_dataset(
         )
 
     return DatasetSummary(n_rows=n_rows, n_cols=n_cols, columns=columns)
-
 
 def missing_table(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -169,7 +171,6 @@ def top_categories(
 
     return result
 
-
 def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> Dict[str, Any]:
     """
     Простейшие эвристики «качества» данных:
@@ -184,6 +185,8 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     max_missing_share = float(missing_df["missing_share"].max()) if not missing_df.empty else 0.0
     flags["max_missing_share"] = max_missing_share
     flags["too_many_missing"] = max_missing_share > 0.5
+
+    flags["has_constant_columns"] = any(col.is_constant for col in summary.columns)
 
     # Простейший «скор» качества
     score = 1.0
