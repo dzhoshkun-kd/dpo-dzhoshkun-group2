@@ -59,3 +59,29 @@ def test_correlation_and_top_categories():
     city_table = top_cats["city"]
     assert "value" in city_table.columns
     assert len(city_table) <= 2
+
+
+def test_has_constant_columns():
+    df = pd.DataFrame(
+        [[0, 'Moscow', 13], [1, 'Paris', 13], [2, 'New York', 13]],
+        columns=['user_id', 'city', 'age']
+    )
+    
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags = compute_quality_flags(summary, missing_df)
+    
+    # Проверяем, что флаг установлен в True, потому что 'age' — константа
+    assert flags["has_constant_columns"] is True
+
+
+def test_suspicious_id_duplicates():
+    df = pd.DataFrame(
+        [[0, 'Moscow', 25], [1, 'Paris', 30], [0, 'Berlin', 40]],
+        columns=['user_id', 'city', 'age']
+    )
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags = compute_quality_flags(summary, missing_df)
+    
+    assert flags["has_suspicious_id_duplicates"] is True

@@ -157,19 +157,15 @@ def head(
     path: str = typer.Argument(..., help="Путь к CSV-файлу."),
     sep: str = typer.Option(",", help="Разделитель в CSV."),
     encoding: str = typer.Option("utf-8", help="Кодировка файла."),
-    n: str = typer.Option("5", help="Количество выводимых строк."),
+    n: int = typer.Option(5, help="Количество выводимых строк."),
 ) -> None:
     """
     Выводит первые n строк датасета
     """
     df = _load_csv(Path(path), sep=sep, encoding=encoding)
 
-    summary = summarize_dataset(df)
-    summary: DatasetSummary = summarize_dataset(df)
-    summary_df = flatten_summary_for_print(summary)
-
     typer.echo(f"Первые n строк датасета: ")
-    typer.echo(summary_df.to_string(index=False))
+    typer.echo(df.head(n))
 
 if __name__ == "__main__":
     app()
