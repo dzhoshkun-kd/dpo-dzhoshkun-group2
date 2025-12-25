@@ -78,6 +78,13 @@ class QualityResponse(BaseModel):
     )
 
 
+class QualityFlagsResponse(BaseModel):
+    flags: dict[str, bool] = Field(
+        ...,
+        description="Словарь булевых флагов качества данных"
+    )
+
+
 # ---------- Системный эндпоинт ----------
 
 
@@ -241,4 +248,50 @@ async def quality_from_csv(file: UploadFile = File(...)) -> QualityResponse:
         latency_ms=latency_ms,
         flags=flags_bool,
         dataset_shape={"n_rows": n_rows, "n_cols": n_cols},
+    )
+
+
+# ---------- /quality-flags-from-csv: все флаги CSV ----------
+
+@app.post(
+    "/quality-flags-from-csv",
+    response_model=QualityFlagsResponse,
+    tags=["quality"],
+    summary="Возвращает флаги качества данных из EDA-анализа CSV",
+)
+async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict[str, bool]:
+    """
+    Эндпоинт, который принимает CSV-файл, запускает EDA-ядро
+    (summarize_dataset + missing_table + compute_quality_flags)
+    и возвращает полный набор флагов качества данных.
+    """
+    
+    if file.content_type not in ("text/csv", "application/vnd.ms-excel", "application/octet-stream"):
+        # content_type от браузера может быть разным, поэтому проверка мягкая
+        # но для демонстрации оставим простую ветку 400
+        raise HTTPException(status_code=400, detail="Ожидается CSV-файл (content-type text/csv).")
+
+    try:
+        # FastAPI даёт file.file как file-like объект, который можно читать pandas'ом
+        df = pd.read_csv(file.file)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=400, detail=f"Не удалось прочитать CSV: {exc}")
+
+    if df.empty:
+        raise HTTPException(status_code=400, detail="CSV-файл не содержит данных (пустой DataFrame).")
+
+
+    # Используем EDA-ядро из S03
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags_all = compute_quality_flags(summary, missing_df)
+
+    flags_bool: dict[str, bool] = {
+        key: value
+        for key, value in flags_all.items()
+        if isinstance(value, bool)
+    }
+
+    return QualityFlagsResponse(
+        flags=flags_bool
     )
