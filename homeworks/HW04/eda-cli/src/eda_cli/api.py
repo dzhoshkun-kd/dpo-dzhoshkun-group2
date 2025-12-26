@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from time import perf_counter
+from typing import Any
 
 import pandas as pd
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -79,9 +80,9 @@ class QualityResponse(BaseModel):
 
 
 class QualityFlagsResponse(BaseModel):
-    flags: dict[str, bool] = Field(
+    flags: dict[str, Any] = Field(
         ...,
-        description="Словарь булевых флагов качества данных"
+        description="Словарь флагов качества данных"
     )
 
 
@@ -286,12 +287,6 @@ async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict[str, bool
     missing_df = missing_table(df)
     flags_all = compute_quality_flags(summary, missing_df)
 
-    flags_bool: dict[str, bool] = {
-        key: value
-        for key, value in flags_all.items()
-        if isinstance(value, bool)
-    }
-
     return QualityFlagsResponse(
-        flags=flags_bool
+        flags=flags_all
     )

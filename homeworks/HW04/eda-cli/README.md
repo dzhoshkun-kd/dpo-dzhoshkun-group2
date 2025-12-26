@@ -56,8 +56,8 @@ uv run eda-cli overview data/example.csv
 
 Параметры:
 
-- `--sep` - разделитель (по умолчанию `,`);
-- `--encoding` - кодировка (по умолчанию `utf-8`).
+- `--sep` – разделитель (по умолчанию `,`);
+- `--encoding` – кодировка (по умолчанию `utf-8`).
 
 ### Полный EDA-отчёт
 
@@ -65,16 +65,25 @@ uv run eda-cli overview data/example.csv
 uv run eda-cli report data/example.csv --out-dir reports
 ```
 
+Параметры:
+
+- `--sep` – разделитель (по умолчанию `,`);
+- `--encoding` – кодировка (по умолчанию `utf-8`);
+- `--out_dir` – каталог для отчёта (по умолчанию `reports/`);
+- `--title` – название заголовка отчёта (по умолчанию `EDA-отчёт`);
+- `--max_hist_columns` – наксимум числовых колонок для гистограмм (по умолчанию `5`);
+- `--top_k` – максимум top-значений для категориальных признаков (по умолчанию `5`).
+
 В результате в каталоге `reports/` появятся:
 
-- `report.md` - основной отчёт в Markdown;
-- `summary.csv` - таблица по колонкам;
-- `missing.csv` - пропуски по колонкам;
-- `correlation.csv` - корреляционная матрица (если есть числовые признаки);
-- `top_categories/*.csv` - top-k категорий по строковым признакам;
-- `hist_*.png` - гистограммы числовых колонок;
-- `missing_matrix.png` - визуализация пропусков;
-- `correlation_heatmap.png` - тепловая карта корреляций.
+- `report.md` – основной отчёт в Markdown;
+- `summary.csv` – таблица по колонкам;
+- `missing.csv` – пропуски по колонкам;
+- `correlation.csv` – корреляционная матрица (если есть числовые признаки);
+- `top_categories/*.csv` – top-k категорий по строковым признакам;
+- `hist_*.png` – гистограммы числовых колонок;
+- `missing_matrix.png` – визуализация пропусков;
+- `correlation_heatmap.png` – тепловая карта корреляций.
 
 ---
 
@@ -145,6 +154,7 @@ http://127.0.0.1:8000/docs
 - вызывать `GET /health`;
 - вызывать `POST /quality` (форма для JSON);
 - вызывать `POST /quality-from-csv` (форма для загрузки файла).
+- вызывать `POST /quality-flags-from-csv` (форма для загрузки файла).
 
 ---
 
@@ -180,11 +190,11 @@ Content-Type: application/json
   "message": "Данных достаточно, модель можно обучать (по текущим эвристикам).",
   "latency_ms": 3.2,
   "flags": {
-    "too_few_rows": false,
+    "too_few_rows": true,
     "too_many_columns": false,
     "too_many_missing": false,
-    "no_numeric_columns": false,
-    "no_categorical_columns": false
+    "has_constant_columns": false,
+    "has_suspicious_id_duplicates": true
   },
   "dataset_shape": {
     "n_rows": 10000,
@@ -244,6 +254,58 @@ curl -X POST "http://127.0.0.1:8000/quality-from-csv" \
 - `flags` - булевы флаги из `compute_quality_flags`;
 - `dataset_shape` - реальные размеры датасета (`n_rows`, `n_cols`);
 - `latency_ms` - время обработки запроса.
+
+---
+
+### 5. `POST /quality-flags-from-csv` – вывод флагов по CSV-файлу
+
+Эндпоинт принимает CSV-файл, внутри:
+
+- читает его в `pandas.DataFrame`;
+- вызывает функции из `eda_cli.core`:
+
+  - `summarize_dataset`,
+  - `missing_table`,
+  - `compute_quality_flags`;
+- возвращает возвращает полный набор флагов качества данных.
+
+**Запрос:**
+
+```http
+POST /quality-flags-from-csv
+Content-Type: multipart/form-data
+file: <CSV-файл>
+```
+
+Через Swagger:
+
+- в `/docs` открыть `POST /quality-flags-from-csv`,
+- нажать `Try it out`,
+- выбрать файл (например, `data/example.csv`),
+- нажать `Execute`.
+
+**Пример вызова через `curl` (Linux/macOS/WSL):**
+
+```bash
+curl -X POST "http://127.0.0.1:8000/quality-flags-from-csv" \
+  -F "file=@data/example.csv"
+```
+
+**Пример ответа `200 OK`:**
+
+```json
+{
+  "flags": {
+    "too_few_rows": true,
+    "too_many_columns": false,
+    "max_missing_share": 0.05555555555555555,
+    "too_many_missing": false,
+    "has_constant_columns": false,
+    "has_suspicious_id_duplicates": true,
+    "quality_score": 0.7444444444444445
+  }
+}
+```
 
 ---
 
