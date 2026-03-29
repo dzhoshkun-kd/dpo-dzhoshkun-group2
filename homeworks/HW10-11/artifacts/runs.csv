@@ -1,5 +1,7 @@
-experiment_id,task,dataset,seed,model_summary,optimizer,lr,epochs_trained,best_val_accuracy,test_accuracy,precision,recall,mean_iou,notes
-C1,classification,CIFAR10,42,SimpleCNN,Adam,0.001,5,0.365,,,,,"Aug=False, FT=None"
-C2,classification,CIFAR10,42,SimpleCNN,Adam,0.001,5,0.31,,,,,"Aug=True, FT=None"
-C3,classification,CIFAR10,42,ResNet18,Adam,0.001,5,0.63,,,,,"Aug=False, FT=head"
-C4,classification,CIFAR10,42,ResNet18,Adam,0.001,5,0.79,0.7822,,,,"Aug=False, FT=layer4"
+experiment_id,task,dataset,best_val_accuracy,test_accuracy,mean_iou,precision,recall
+C1,classification,CIFAR100,0.3993,0.3987,,,
+C2,classification,CIFAR100,0.3241,0.3535,,,
+C3,classification,CIFAR100,0.6439,0.5765,,,
+C4,classification,CIFAR100,0.9395,0.7146,,,
+V1,detection,PASCALVOC,,,0.0,0.0,0.0
+V2,detection,PASCALVOC,,,0.0,0.0,0.0

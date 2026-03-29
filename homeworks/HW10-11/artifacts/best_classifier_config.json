@@ -1,8 +1,19 @@
 {
-  "experiment_id": "C4",
-  "model": "ResNet18",
-  "dataset": "CIFAR10",
-  "seed": 42,
-  "epochs": 5,
-  "batch_size": 64
+    "experiment_id": "C4",
+    "model": "ResNet18",
+    "dataset": "CIFAR100",
+    "seed": 42,
+    "epochs": 5,
+    "batch_size": 64,
+    "transforms": {
+        "base": [
+            "ToTensor",
+            "Normalize"
+        ],
+        "augmentation": [
+            "RandomHorizontalFlip",
+            "RandomCrop"
+        ]
+    },
+    "preprocessing": "ResNet18_Weights.DEFAULT"
 }
