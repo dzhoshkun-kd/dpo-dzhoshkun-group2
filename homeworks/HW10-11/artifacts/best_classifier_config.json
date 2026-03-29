@@ -2,18 +2,26 @@
     "experiment_id": "C4",
     "model": "ResNet18",
     "dataset": "CIFAR100",
+    "num_classes": 100,
     "seed": 42,
     "epochs": 5,
     "batch_size": 64,
+    "learning_rate": 0.001,
+    "best_val_accuracy": 0.7084,
+    "test_accuracy": 0.7061,
     "transforms": {
         "base": [
             "ToTensor",
-            "Normalize"
+            "Normalize(CIFAR100)"
         ],
         "augmentation": [
             "RandomHorizontalFlip",
-            "RandomCrop"
+            "RandomCrop(32,4)"
+        ],
+        "imagenet": [
+            "Resize(224)",
+            "ToTensor",
+            "Normalize(ImageNet)"
         ]
-    },
-    "preprocessing": "ResNet18_Weights.DEFAULT"
+    }
 }

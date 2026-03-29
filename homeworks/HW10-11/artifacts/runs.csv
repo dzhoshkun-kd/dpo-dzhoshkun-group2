@@ -1,7 +1,7 @@
-experiment_id,task,dataset,best_val_accuracy,test_accuracy,mean_iou,precision,recall
-C1,classification,CIFAR100,0.3993,0.3987,,,
-C2,classification,CIFAR100,0.3241,0.3535,,,
-C3,classification,CIFAR100,0.6439,0.5765,,,
-C4,classification,CIFAR100,0.9395,0.7146,,,
-V1,detection,PASCALVOC,,,0.0,0.0,0.0
-V2,detection,PASCALVOC,,,0.0,0.0,0.0
+experiment_id,task,dataset,seed,model_summary,optimizer,lr,epochs_trained,best_val_accuracy,test_accuracy,precision,recall,mean_iou,notes
+C1,classification,CIFAR100,42,SimpleCNN,Adam,0.001,5,0.3915,,,,,base
+C2,classification,CIFAR100,42,SimpleCNN,Adam,0.001,5,0.3733,,,,,aug
+C3,classification,CIFAR100,42,ResNet18,Adam,0.001,5,0.5774,,,,,frozen_backbone
+C4,classification,CIFAR100,42,ResNet18,Adam,0.001,5,0.7084,0.7061,,,,finetune_layer4
+V1,detection,PASCALVOC,42,FasterRCNN_ResNet50_FPN,N/A,,0,,,0.2727,0.9044,0.8023,threshold=0.3
+V2,detection,PASCALVOC,42,FasterRCNN_ResNet50_FPN,N/A,,0,,,0.5223,0.8603,0.809,threshold=0.7
