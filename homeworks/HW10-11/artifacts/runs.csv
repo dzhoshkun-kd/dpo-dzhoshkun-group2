@@ -5,3 +5,15 @@ C3,classification,CIFAR100,42,ResNet18,Adam,0.001,5,0.5774,,,,,frozen_backbone
 C4,classification,CIFAR100,42,ResNet18,Adam,0.001,5,0.7084,0.7061,,,,finetune_layer4
 V1,detection,PASCALVOC,42,FasterRCNN_ResNet50_FPN,N/A,,0,,,0.2727,0.9044,0.8023,threshold=0.3
 V2,detection,PASCALVOC,42,FasterRCNN_ResNet50_FPN,N/A,,0,,,0.5223,0.8603,0.809,threshold=0.7
+C1,classification,STL10,42,SimpleCNN-3conv,Adam,0.001,10,0.579,,,,,no augmentations
+C2,classification,STL10,42,SimpleCNN-3conv,Adam,0.001,10,0.562,,,,,"with augmentations: RandomCrop, HFlip, ColorJitter, Rotation"
+C3,classification,STL10,42,ResNet18-head-only,Adam,0.001,10,0.939,,,,,"pretrained ResNet18, backbone frozen, only fc trained"
+C4,classification,STL10,42,ResNet18-finetune-layer4+fc,Adam,0.001,10,0.915,,,,,"pretrained ResNet18, layer4+fc unfrozen"
+C3-test,classification,STL10,42,ResNet18-head-only,Adam,0.001,10,0.939,0.9405,,,,backbone frozen | FINAL TEST
+C1,classification,STL10,42,SimpleCNN-3conv,Adam,0.001,10,0.575,,,,,no augmentations
+C2,classification,STL10,42,SimpleCNN-3conv,Adam,0.001,10,0.554,,,,,"with augmentations: RandomCrop, HFlip, ColorJitter, Rotation"
+C3,classification,STL10,42,ResNet18-head-only,Adam,0.001,10,0.939,,,,,"pretrained ResNet18, backbone frozen, only fc trained"
+C4,classification,STL10,42,ResNet18-finetune-layer4+fc,Adam,0.001,10,0.913,,,,,"pretrained ResNet18, layer4+fc unfrozen"
+C3-test,classification,STL10,42,ResNet18-head-only,Adam,0.001,10,0.939,0.9405,,,,backbone frozen | FINAL TEST
+V1,segmentation,OxfordIIITPet,42,DeepLabV3_ResNet50 (pretrained),—,—,—,,,0.7007,0.8222,0.6472,"argmax + foreground classes 8 (cat), 12 (dog)"
+V2,segmentation,OxfordIIITPet,42,DeepLabV3_ResNet50 (pretrained),—,—,—,,,0.6826,0.8196,0.6453,argmax + foreground + remove connected components < 500px
