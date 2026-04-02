@@ -1,3 +1,18 @@
 {
-    test
+    "input_size": 1,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "dropout": 0.2,
+    "window_size": 30,
+    "batch_size": 32,
+    "lr": 0.001,
+    "epochs_max": 100,
+    "patience": 15,
+    "seed": 42,
+    "scaler": "StandardScaler (fit on train)",
+    "optimizer": "Adam",
+    "epochs_trained": 47,
+    "best_val_mae": 4.9257,
+    "best_val_rmse": 6.4258,
+    "best_val_mape": 3.3264
 }
